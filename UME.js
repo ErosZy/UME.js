@@ -3,10 +3,7 @@
  */
 
 /**
- * todo:
- * 0.use模块需要complete
- * 1.模块的重复加载去除（）
- * 2.内联使用use的依赖正则解析
+ * todo:内联使用use的依赖正则解析
  */
 var UME = (function(w, u) {
     var window = w,
@@ -72,20 +69,15 @@ var UME = (function(w, u) {
 
             //否则需要加载这些模块
             for(i = 0; i < len; i++){
-                self._load(modulesInfo[i],function(path){
-                    self._emitProxy(path);
+                self._load(modulesInfo[i],function(){
+                    self._emitProxy(modules);
                     self._emitAll();
                 })
             }
         }
 
         function bind() {
-            if(++count < len){
-                return false;
-            }else{
-                return true;
-            }
-
+            count++;
         }
 
         function all(){
@@ -100,6 +92,8 @@ var UME = (function(w, u) {
             //保证依赖模块的【所有依赖】已完成
             if(params.length != modules.length)
                 return false;
+
+            self._clearProxy(modules);
 
             obj = fn.apply(self,params);
 
@@ -188,16 +182,37 @@ var UME = (function(w, u) {
      * @param path
      * @private
      */
-    UME._emitProxy = function(path){
-        var self = this,
-            len = _proxy[path].length,
-            flag = false;
+    UME._emitProxy = function(modules){
+        var self = this,item;
 
-        for(var i = 0; i < len; i++){
-            flag = _proxy[path][i].call(self);
+        for(var i = 0,len = modules.length; i < len; i++){
+            item = _proxy[modules[i]];
+            for(var j = 0 ,length = item.length; j < length; j++){
+                if(item[j]){
+                    item[j].apply(self);
+                    _proxy[modules[i]][j] = null;
+                }
+            }
+        }
+    }
 
-            if(flag)
-                _proxy[path][i] = null;
+    /**
+     * 清理proxy中属性值为null的
+     * @param modules
+     * @private
+     */
+    UME._clearProxy = function(modules){
+        var self = this,item;
+
+        for(var i = 0,len = modules.length; i < len; i++){
+            item = _proxy[modules[i]];
+            for(var j = 0,length = item.length; j < length; j++){
+                if(item[j] == null){
+                    item.splice(j,1);
+                    length--;
+                    j--;
+                }
+            }
         }
     }
 
@@ -318,7 +333,7 @@ var UME = (function(w, u) {
                     if(index != -1)
                         _loading.splice(index,1);
 
-                    fn.call(self,path);
+                    fn.apply(self)
                 }
             })
         } else {
@@ -328,7 +343,7 @@ var UME = (function(w, u) {
                 if(index != -1)
                     _loading.splice(index,1);
 
-                fn.call(self,path);
+                fn.apply(self)
             })
         }
 
