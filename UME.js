@@ -13,11 +13,12 @@ var UME = (function(w, u) {
         undefined = u,
         UME = {};
 
-
     var _moduleCache = {},
         _loading = [],
         _proxy = {},
         _all = [];
+
+    window.p = _proxy;
 
     /**
      * 定义模块变量
@@ -41,15 +42,15 @@ var UME = (function(w, u) {
         path = self._toPath(arguments[0]);
         for(i = 0,len = modules.length; i < len; i++){
             modules[i] = self._toPath(modules[i]);
-            _loading.push(modules[i]);
+            _proxy[modules[i]] = _proxy[modules[i]] ? _proxy[modules[i]] : [];
+            _proxy[modules[i]].push(bind);
         }
 
         //获取需要加载的模块
         modulesInfo = self._getRequireModulesInfo(modules);
         len = modulesInfo.length;
         for(i = 0; i < len; i ++){
-            _proxy[modulesInfo[i]] = _proxy[modulesInfo[i]] ? _proxy[modulesInfo[i]] : [];
-            _proxy[modulesInfo[i]].push(bind);
+            _loading.push(modulesInfo[i]);
         }
 
         /*
@@ -79,7 +80,12 @@ var UME = (function(w, u) {
         }
 
         function bind() {
-            count++;
+            if(++count < len){
+                return false;
+            }else{
+                return true;
+            }
+
         }
 
         function all(){
@@ -132,7 +138,7 @@ var UME = (function(w, u) {
 
         for(i = 0, len = arr.length; i < len; i++){
             var module = arr[i],
-                isCached = module in _moduleCache  && self._getLoadingIndex(module) != -1;
+                isCached = module in _moduleCache  || self._getLoadingIndex(module) != -1;
 
             if(!isCached){
                 requires.push(module);
@@ -172,9 +178,8 @@ var UME = (function(w, u) {
         for(var i = _all.length - 1; i >= 0; i--){
             flag = _all[i].apply(self);
 
-            if(flag){
+            if(flag)
                 _all.splice(i,1);
-            }
         }
     }
 
@@ -185,10 +190,14 @@ var UME = (function(w, u) {
      */
     UME._emitProxy = function(path){
         var self = this,
-            len = _proxy[path].length;
+            len = _proxy[path].length,
+            flag = false;
 
         for(var i = 0; i < len; i++){
-            _proxy[path][i].call(self);
+            flag = _proxy[path][i].call(self);
+
+            if(flag)
+                _proxy[path][i] = null;
         }
     }
 
@@ -300,11 +309,12 @@ var UME = (function(w, u) {
 
         script = document.createElement("script");
         script.src = path;
-        index = self._getLoadingIndex(path);
 
         if (isIE) {
             self._on(script, "readystatechange", function() {
+
                 if (script.readyState == "complete"){
+                    index = self._getLoadingIndex(path);
                     if(index != -1)
                         _loading.splice(index,1);
 
@@ -312,7 +322,9 @@ var UME = (function(w, u) {
                 }
             })
         } else {
+
             self._on(script, "load", function() {
+                index = self._getLoadingIndex(path);
                 if(index != -1)
                     _loading.splice(index,1);
 
@@ -333,7 +345,7 @@ var UME = (function(w, u) {
             location = window.location,
             origin = location.origin,
             pathname = location.pathname,
-            reg = /^(\/[^\.]+\/)/i,
+            reg = /^(\/.+\/)/i,
             url;
 
         if(reg.test(pathname)){
@@ -367,7 +379,7 @@ var UME = (function(w, u) {
 
     /**
      * 判断是否是对象
-     * @param arr
+     * @param obj
      * @returns {boolean}
      * @private
      */
@@ -377,7 +389,7 @@ var UME = (function(w, u) {
 
     /**
      * 判断是否是字符串
-     * @param arr
+     * @param str
      * @returns {boolean}
      * @private
      */
