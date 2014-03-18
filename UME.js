@@ -358,15 +358,17 @@ var UME = (function(w, u) {
     UME._toPath = function(path) {
         var self = this,
             location = window.location,
-            origin = location.origin,
+            protocol = location.protocol,
+            hostname = location.hostname,
+            port = location.port ? ":" + location.port : "",
             pathname = location.pathname,
             reg = /^(\/.+\/)/i,
             url;
 
         if(reg.test(pathname)){
-            url = origin + RegExp["$1"] + path;
+            url = protocol + "//" + hostname + port + RegExp["$1"] + path;
         }else{
-            url = origin + path;
+            url = protocol + "//" + hostname + port + path;
         }
 
         return url
