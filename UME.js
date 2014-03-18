@@ -5,10 +5,10 @@
 /**
  * todo:
  * 0.use模块需要complete
- * 1.模块的重复加载去除
+ * 1.模块的重复加载去除（）
  * 2.内联使用use的依赖正则解析
  */
-;var UME = (function(w, u) {
+var UME = (function(w, u) {
     var window = w,
         undefined = u,
         UME = {};
@@ -16,6 +16,7 @@
 
     var _moduleCache = {},
         _loading = [],
+        _proxy = {},
         _all = [];
 
     /**
@@ -46,6 +47,10 @@
         //获取需要加载的模块
         modulesInfo = self._getRequireModulesInfo(modules);
         len = modulesInfo.length;
+        for(i = 0; i < len; i ++){
+            _proxy[modulesInfo[i]] = _proxy[modulesInfo[i]] ? _proxy[modulesInfo[i]] : [];
+            _proxy[modulesInfo[i]].push(bind);
+        }
 
         /*
          * 如果len为0则说明：
@@ -53,7 +58,6 @@
          * 2.没有所依赖的模块,只传入了模块定义
          */
         if(!len){
-            //debugger;
             var params = self._getModulesInstance(modules),
                 obj = fn.apply(self,params);
 
@@ -67,8 +71,8 @@
 
             //否则需要加载这些模块
             for(i = 0; i < len; i++){
-                self._load(modulesInfo[i],function(){
-                    bind();
+                self._load(modulesInfo[i],function(path){
+                    self._emitProxy(path);
                     self._emitAll();
                 })
             }
@@ -79,8 +83,7 @@
         }
 
         function all(){
-            var len = modules.length,
-                params,obj;
+            var params,obj;
 
             //保证依赖模块是加载完成的
             if(count < len)
@@ -89,7 +92,7 @@
             params = self._getModulesInstance(modules);
 
             //保证依赖模块的【所有依赖】已完成
-            if(params.length != len)
+            if(params.length != modules.length)
                 return false;
 
             obj = fn.apply(self,params);
@@ -103,10 +106,18 @@
     /**
      * 外部调用模块化
      * @param path
-     * @param callback
      */
-    UME.use = function(path, callback) {
+    UME.use = function(path) {
+        var self = this;
 
+        if(self._isString(path)){
+            path = self._toPath(path);
+            self._load(path,function(){
+                return;
+            });
+        }else{
+            throw new Error("the param path is needed,please check your function caller param!");
+        }
     }
 
     /**
@@ -167,6 +178,26 @@
         }
     }
 
+    /**
+     * 相同的模块索引计数都需要+1
+     * @param path
+     * @private
+     */
+    UME._emitProxy = function(path){
+        var self = this,
+            len = _proxy[path].length;
+
+        for(var i = 0; i < len; i++){
+            _proxy[path][i].call(self);
+        }
+    }
+
+    /**
+     * 获取正在加载的loading模块的索引
+     * @param module
+     * @returns {number}
+     * @private
+     */
     UME._getLoadingIndex = function(module){
         var self = this,
             index = -1;
@@ -277,7 +308,7 @@
                     if(index != -1)
                         _loading.splice(index,1);
 
-                    fn();
+                    fn.call(self,path);
                 }
             })
         } else {
@@ -285,7 +316,7 @@
                 if(index != -1)
                     _loading.splice(index,1);
 
-                fn();
+                fn.call(self,path);
             })
         }
 
@@ -342,6 +373,16 @@
      */
     UME._isObject = function(obj){
         return Object.prototype.toString.call(obj) == "[object Object]";
+    }
+
+    /**
+     * 判断是否是字符串
+     * @param arr
+     * @returns {boolean}
+     * @private
+     */
+    UME._isString = function(str){
+        return Object.prototype.toString.call(str) == "[object String]";
     }
 
 
