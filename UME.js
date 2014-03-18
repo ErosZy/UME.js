@@ -15,8 +15,6 @@ var UME = (function(w, u) {
         _proxy = {},
         _all = [];
 
-    window.p = _proxy;
-
     /**
      * 定义模块变量
      */
@@ -24,7 +22,7 @@ var UME = (function(w, u) {
         var self = this,
             argsLen = arguments.length,
             count = 0,
-            fn,modules,modulesInfo,len,path,i;
+            fn,modules,modulesInfo,len,path, i,hasLoadingModules;
 
         //说明没有传入requires参数
         if (argsLen <= 2) {
@@ -50,12 +48,16 @@ var UME = (function(w, u) {
             _loading.push(modulesInfo[i]);
         }
 
+        //是否有加载的模块
+        hasLoadingModules = self._hasLoadingModules(modules);
+
         /*
          * 如果len为0则说明：
          * 1.所依赖的模块全部都保存在了cache中
          * 2.没有所依赖的模块,只传入了模块定义
+         * 3.模块正在被加载
          */
-        if(!len){
+        if(!len && !hasLoadingModules){
             var params = self._getModulesInstance(modules),
                 obj = fn.apply(self,params);
 
@@ -232,6 +234,26 @@ var UME = (function(w, u) {
         }
 
         return index;
+    }
+
+    /**
+     * 是否有正在加载的模块
+     * @param modules
+     * @returns {boolean}
+     */
+    UME._hasLoadingModules = function(modules){
+        var self = this;
+
+        for(var i = 0,len = modules.length; i < len; i++){
+            item = modules[i];
+            for(var j = 0,length = _loading.length; j < length; j++){
+                if(item == _loading[j]){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 
