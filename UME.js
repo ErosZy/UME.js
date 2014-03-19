@@ -298,56 +298,6 @@ var UME = (function(w, u) {
     }
 
     /**
-     * 事件取消函数
-     * @param ele 取消对象
-     * @param eventName 事件名
-     * @param fn 事件函数
-     * @private
-     */
-    UME._off = function(ele, eventName, fn) {
-        var self = this,
-            event;
-
-        //如果小于3，就删除所有事件
-        //否则就删除对应的事件
-        if (arguments.length < 3) {
-            if (eventName) {
-                if (document.detachEvent) {
-                    for (var item in ele[eventName]) {
-                        if (ele[eventName].hasOwnProperty(item))
-                            ele.detachEvent("on" + eventName, ele[eventName][item]);
-                    }
-                } else if (document.removeEventListener) {
-                    for (var item in ele[eventName]) {
-                        if (ele[eventName].hasOwnProperty(item))
-                            ele.removeEventListener(eventName, ele[eventName][item]);
-                    }
-                } else {
-                    ele["on" + eventName] = null;
-                }
-                ele[eventName] = null;
-            } else {
-                return;
-            }
-        } else {
-            event = eventName + fn.toString().replace(/\s+/g, '');
-            fn = ele[eventName][event];
-
-            if (typeof fn != "function") return;
-
-            if (document.detachEvent) {
-                ele.detachEvent("on" + eventName, function(ev) {
-                    fn.call(ele, ev);
-                });
-            } else if (document.removeEventListener) {
-                ele.removeEventListener(eventName, fn, false);
-            } else {
-                ele[eventName][event] = null;
-            }
-        }
-    }
-
-    /**
      * 加载script
      * @param path 文件路径
      * @param fn 回调函数
