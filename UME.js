@@ -57,13 +57,7 @@ var UME = (function(w, u) {
          * 2.没有所依赖的模块,只传入了模块定义
          * 3.模块正在被加载
          */
-        if(!len){
-
-            if(hasLoadingModules){
-                _all.push(all);
-                return;
-            }
-
+        if(!len && !hasLoadingModules){
             var params = self._getModulesInstance(modules),
                 obj = fn.apply(self,params);
 
@@ -182,6 +176,15 @@ var UME = (function(w, u) {
 
             if(flag)
                 _all.splice(i,1);
+        }
+
+        /**
+         * 没有在加载的模块了（依赖全部加载完成）
+         * 但是_all里面的回调没有执行完
+         * 那么需要再执行一次以保证_all是空数组的
+         */
+        if(!_loading.length && _all.length){
+            self._emitAll();
         }
     }
 
