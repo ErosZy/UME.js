@@ -27,10 +27,10 @@ var UME = (function(w, u) {
         //说明没有传入requires参数
         if (argsLen <= 2) {
             modules = [];
-            fn = self._isFunction(arguments[1]) ? arguments[1] : function(){};
+            fn = self._is("Function",arguments[1]) ? arguments[1] : function(){};
         } else {
-            modules = self._isArray(arguments[1]) ? arguments[1] : [];
-            fn = self._isFunction(arguments[2]) ? arguments[2] : function(){};
+            modules = self._is("Array",arguments[1]) ? arguments[1] : [];
+            fn = self._is("Function",arguments[2]) ? arguments[2] : function(){};
         }
 
         //转换路径，统一为绝对路径
@@ -118,7 +118,7 @@ var UME = (function(w, u) {
     UME.use = function(path) {
         var self = this;
 
-        if(self._isString(path)){
+        if(self._is("String",path)){
             path = self._toPath(path);
             self._load(path,function(){
                 return;
@@ -362,43 +362,14 @@ var UME = (function(w, u) {
     }
 
     /**
-     * 判断是否是函数
-     * @param fn
+     * 判断是否是某种类型
+     * @param type 类型，例如:String
+     * @param param 对比的参数
      * @returns {boolean}
      * @private
      */
-    UME._isFunction = function(fn){
-        return Object.prototype.toString.call(fn) == "[object Function]";
-    }
-
-    /**
-     * 判断是否是数组
-     * @param arr
-     * @returns {boolean}
-     * @private
-     */
-    UME._isArray = function(arr){
-        return Object.prototype.toString.call(arr) == "[object Array]";
-    }
-
-    /**
-     * 判断是否是对象
-     * @param obj
-     * @returns {boolean}
-     * @private
-     */
-    UME._isObject = function(obj){
-        return Object.prototype.toString.call(obj) == "[object Object]";
-    }
-
-    /**
-     * 判断是否是字符串
-     * @param str
-     * @returns {boolean}
-     * @private
-     */
-    UME._isString = function(str){
-        return Object.prototype.toString.call(str) == "[object String]";
+    UME._is = function(type,param){
+        return Object.prototype.toString.call(param) == "[object " + type + "]";
     }
 
 
