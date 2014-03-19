@@ -57,7 +57,13 @@ var UME = (function(w, u) {
          * 2.没有所依赖的模块,只传入了模块定义
          * 3.模块正在被加载
          */
-        if(!len && !hasLoadingModules){
+        if(!len){
+
+            if(hasLoadingModules){
+                _all.push(all);
+                return;
+            }
+
             var params = self._getModulesInstance(modules),
                 obj = fn.apply(self,params);
 
