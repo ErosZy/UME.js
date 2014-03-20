@@ -2,9 +2,6 @@
  * Created by mac on 14-3-15.
  */
 
-/**
- * todo:内联使用use的依赖正则解析
- */
 var UME = (function(w, u) {
     var window = w,
         undefined = u,
@@ -22,7 +19,7 @@ var UME = (function(w, u) {
         var self = this,
             argsLen = arguments.length,
             count = 0,
-            fn,modules,modulesInfo,len,path, i,hasLoadingModules;
+            fn,modules,modulesInfo,len,path, i,hasLoadingModules,inlineUseInfo;
 
         //说明没有传入requires参数
         if (argsLen <= 2) {
@@ -31,6 +28,14 @@ var UME = (function(w, u) {
         } else {
             modules = self._is("Array",arguments[1]) ? arguments[1] : [];
             fn = self._is("Function",arguments[2]) ? arguments[2] : function(){};
+        }
+
+        inlineUseInfo = self._parse(fn);
+
+        if(inlineUseInfo){
+            debugger;
+            modules = modules.concat(inlineUseInfo.requires);
+            fn = inlineUseInfo.fn;
         }
 
         //转换路径，统一为绝对路径
@@ -178,10 +183,11 @@ var UME = (function(w, u) {
             flag = false;
 
         for(var i = _all.length - 1; i >= 0; i--){
-            flag = _all[i].apply(self);
+            flag = _all[i] && _all[i].apply(self);
 
-            if(flag)
+            if(flag){
                 _all.splice(i,1);
+            }
         }
 
         /**
@@ -224,7 +230,7 @@ var UME = (function(w, u) {
         for(var i = 0,len = modules.length; i < len; i++){
             item = _proxy[modules[i]];
             for(var j = 0,length = item.length; j < length; j++){
-                if(item[j] == null){
+                if(!item[j]){
                     item.splice(j,1);
                     length--;
                     j--;
@@ -257,7 +263,7 @@ var UME = (function(w, u) {
      * @returns {boolean}
      */
     UME._hasLoadingModules = function(modules){
-        var self = this;
+        var self = this,item;
 
         for(var i = 0,len = modules.length; i < len; i++){
             item = modules[i];
@@ -269,6 +275,70 @@ var UME = (function(w, u) {
         }
 
         return false;
+    }
+
+    UME._parse = function(fn){
+        var self = this,
+            fnStr = fn.toString(),
+            reg = /self.use\((["'])(.+?)\1\);?/g,
+            requires = [],
+            params = [];
+
+        if(!reg.test(fnStr))
+            return;
+
+        //清除换行，单行注释与双行注释
+        fnStr = self._clearNotes(fnStr);
+
+        //正则匹配出内联使用的use模块，并替换为模块名
+        fnStr = fnStr.replace(/self.use\((["'])(.+?)\1\);?/g,function(){
+            var module = arguments[2],
+                begin = module.lastIndexOf("/"),
+                last = module.lastIndexOf("."),
+                moduleName = module.slice(begin+1).slice(0,last-2);
+
+            moduleName += +new Date();
+
+            requires.push(module);
+
+            params.push(moduleName);
+
+            return moduleName;
+
+        });
+
+        //将模块参数提取出来
+        fnStr = fnStr.replace(/function\s*\((.*?)\)/,function(){
+            params.unshift(arguments[1]);
+            return "function()";
+        });
+
+        for(var i = 0,len = params.length; i < len; i++){
+            if(!params[i])
+                params.splice(i,1);
+        }
+        params = params.join(",");
+
+        fn = new Function(params,"return ("+fnStr+"());");
+
+        return {
+            requires: requires,
+            fn: fn
+        }
+    }
+
+    /**
+     * 清除注释
+     * @param fnStr
+     * @returns {*}
+     * @private
+     */
+    UME._clearNotes = function(fnStr){
+        var self = this;
+
+        fnStr = fnStr.replace(/\/\/.*|\/\*.*\*\//g,'');
+
+        return fnStr;
     }
 
 
@@ -314,7 +384,6 @@ var UME = (function(w, u) {
 
         if (isIE) {
             self._on(script, "readystatechange", function() {
-
                 if (script.readyState == "complete"){
                     index = self._getLoadingIndex(path);
                     if(index != -1)
@@ -349,13 +418,15 @@ var UME = (function(w, u) {
             hostname = location.hostname,
             port = location.port ? ":" + location.port : "",
             pathname = location.pathname,
+            href = location.href,
             reg = /^(\/.+\/)/i,
-            url;
+            url,index;
 
         if(reg.test(pathname)){
             url = protocol + "//" + hostname + port + RegExp["$1"] + path;
         }else{
-            url = protocol + "//" + hostname + port + path;
+            index = href.lastIndexOf("/");
+            url = href.slice(0,index) + path;
         }
 
         return url
