@@ -277,6 +277,12 @@ var UME = (function(w, u) {
         return false;
     }
 
+    /**
+     * 解析内联使用 self.use(path)
+     * @param fn
+     * @returns {{requires: Array, fn: Function}}
+     * @private
+     */
     UME._parse = function(fn){
         var self = this,
             fnStr = fn.toString(),
