@@ -61,7 +61,7 @@ IE6+、Chrome、Firefox、Safari、Opera等浏览器
 	
 	
 	UME.define("./example.js",["./other.js"],function(module){
-		var module2 = self.use("./other2.js");
+		var module2 = this.use("./other2.js");
 		
 		console.log(module,module2);
 	})
