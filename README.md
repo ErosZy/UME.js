@@ -16,7 +16,7 @@ IE6+、Chrome、Firefox、Safari、Opera等浏览器
 ####定义：
 
 ````
-	UME.defined(path,requires,fn);
+	UME.define(path,requires,fn);
 ````
 
 ####例子：
