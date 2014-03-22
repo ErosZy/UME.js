@@ -33,7 +33,6 @@ var UME = (function(w, u) {
         inlineUseInfo = self._parse(fn);
 
         if(inlineUseInfo){
-            debugger;
             modules = modules.concat(inlineUseInfo.requires);
             fn = inlineUseInfo.fn;
         }
@@ -125,9 +124,7 @@ var UME = (function(w, u) {
 
         if(self._is("String",path)){
             path = self._toPath(path);
-            self._load(path,function(){
-                return;
-            });
+	        self._load(path);
         }else{
             throw new Error("the param path is needed,please check your function caller param!");
         }
@@ -394,8 +391,9 @@ var UME = (function(w, u) {
                     index = self._getLoadingIndex(path);
                     if(index != -1)
                         _loading.splice(index,1);
-
-                    fn.apply(self)
+					
+					if(self._is("Function",fn))
+                    	fn.apply(self)
                 }
             })
         } else {
@@ -404,8 +402,9 @@ var UME = (function(w, u) {
                 index = self._getLoadingIndex(path);
                 if(index != -1)
                     _loading.splice(index,1);
-
-                fn.apply(self)
+				
+				if(self._is("Function",fn))
+                	fn.apply(self)
             })
         }
 
