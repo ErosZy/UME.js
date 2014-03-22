@@ -14,11 +14,14 @@ IE6+、Chrome、Firefox、Safari、Opera等浏览器
 ###模块定义
 
 ####定义：
+
 ````
 	UME.defined(path,requires,fn);
 ````
 
 ####例子：
+
+````
 	UME.define("./example.js",["./other.js"],function(module){
 		console.log(module);
 	})
@@ -45,10 +48,13 @@ IE6+、Chrome、Firefox、Safari、Opera等浏览器
 	
 ````
 ####内联使用：
+
+````
 	this.use(path);
 ````
 
 ####例子：
+
 ````	
 	
 	UME.use("./example.js");
