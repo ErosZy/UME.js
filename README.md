@@ -5,16 +5,20 @@ UME.js
 UME.js -- 轻巧、简单的模块化库
 
 
-#2.兼容
+#2.兼容性
 
 IE6+、Chrome、Firefox、Safari、Opera等浏览器
 
 #3.使用
+
 ###模块定义
 
+####定义：
 ````
 	UME.defined(path,requires,fn);
-	
+````
+
+####例子：
 	UME.define("./example.js",["./other.js"],function(module){
 		console.log(module);
 	})
@@ -32,14 +36,20 @@ IE6+、Chrome、Firefox、Safari、Opera等浏览器
 
 ###模块使用
 
-````
+
 ####外部使用：
+
+````
 
 	UME.use(path);
 	
+````
 ####内联使用：
 	this.use(path);
-	
+````
+
+####例子：
+````	
 	
 	UME.use("./example.js");
 	
