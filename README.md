@@ -6,7 +6,7 @@ UME.js -- 轻巧、简单的模块化库
 
 
 #USEAGE
-模块定义
+###模块定义
 
 ````
 	UME.defined(path,requires,fn);
@@ -26,14 +26,14 @@ UME.js -- 轻巧、简单的模块化库
 	})
 ````
 
-模块使用
+###模块使用
 
 ````
-外部使用：
+####外部使用：
 
 	UME.use(path);
 	
-内联使用：
+####内联使用：
 	this.use(path);
 	
 	
@@ -45,4 +45,6 @@ UME.js -- 轻巧、简单的模块化库
 		
 		console.log(module,module2);
 	})
+
+````
 
