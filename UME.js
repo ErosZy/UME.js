@@ -404,7 +404,7 @@ var UME = (function(w, u) {
                     _loading.splice(index,1);
 				
 				if(self._is("Function",fn))
-                	fn.apply(self)
+                	fn.apply(self);
             })
         }
 
