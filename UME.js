@@ -356,8 +356,8 @@ var UME = (function(w, u) {
         var self = this,
             event = eventName + fn.toString().replace(/\s+/g, '');
 
-        ele[eventName] = ele[eventName] ? ele[eventName] : {};
-        ele[eventName][event] = fn;
+        ele[eventName+"event"] = ele[eventName] ? ele[eventName] : {};
+        ele[eventName+"event"][event] = fn;
 
         if (document.attachEvent) {
             ele.attachEvent("on" + eventName, function(ev) {
@@ -389,6 +389,7 @@ var UME = (function(w, u) {
             self._on(script, "readystatechange", function() {
                 if (script.readyState == "complete"){
                     index = self._getLoadingIndex(path);
+
                     if(index != -1)
                         _loading.splice(index,1);
 					
@@ -400,6 +401,7 @@ var UME = (function(w, u) {
 
             self._on(script, "load", function() {
                 index = self._getLoadingIndex(path);
+
                 if(index != -1)
                     _loading.splice(index,1);
 				
