@@ -5,6 +5,7 @@
 (function(w, u) {
     var window = w,
         undefined = u,
+        dataMain,
         UME = {};
 
     var _moduleCache = {},
@@ -74,7 +75,7 @@
             //将fn返回的对象保存在_moduleCaches中
             _moduleCache[path] = obj;
 
-            self._emitAll();
+            //self._emitAll();
 
         }else{
             _all.push(all);
@@ -226,11 +227,9 @@
 
         for(var i = 0,len = modules.length; i < len; i++){
             item = _proxy[modules[i]];
-            for(var j = 0,length = item.length; j < length; j++){
+            for(var j = item.length - 1; j >= 0 ; j--){
                 if(!item[j]){
                     item.splice(j,1);
-                    length--;
-                    j--;
                 }
             }
         }
@@ -450,6 +449,15 @@
         return Object.prototype.toString.call(param) == "[object " + type + "]";
     }
 
+    /**
+     * 获取script标签上带有的data-main参数
+     * 进行自动加载
+     */
+    dataMain = document.getElementsByTagName("script")[0].getAttribute("data-main");
+
+    if(dataMain){
+        UME.use("./" + dataMain);
+    }
 
     window.UME = UME;
 
