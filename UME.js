@@ -2,7 +2,7 @@
  * Created by mac on 14-3-15.
  */
 
-var UME = (function(w, u) {
+(function(w, u) {
     var window = w,
         undefined = u,
         UME = {};
@@ -19,7 +19,7 @@ var UME = (function(w, u) {
         var self = this,
             argsLen = arguments.length,
             count = 0,
-            fn,modules,modulesInfo,len,path, i,hasLoadingModules,inlineUseInfo;
+            fn,modules,modulesInfo,len,path,i,hasLoadingModules,inlineUseInfo;
 
         //说明没有传入requires参数
         if (argsLen <= 2) {
@@ -33,7 +33,7 @@ var UME = (function(w, u) {
         inlineUseInfo = self._parse(fn);
 
         if(inlineUseInfo){
-            modules = modules.concat(inlineUseInfo.requires);
+            modules = modules.concat.apply(modules,inlineUseInfo.requires);
             fn = inlineUseInfo.fn;
         }
 
@@ -451,6 +451,6 @@ var UME = (function(w, u) {
     }
 
 
-    return UME;
+    window.UME = UME;
 
-}(window, undefined));
+}(window));
