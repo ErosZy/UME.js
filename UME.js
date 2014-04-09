@@ -75,7 +75,7 @@
             //将fn返回的对象保存在_moduleCaches中
             _moduleCache[path] = obj;
 
-            //self._emitAll();
+            self._emitAll();
 
         }else{
             _all.push(all);
@@ -207,7 +207,7 @@
      */
     UME._emitProxy = function(module){
         var self = this,item;
-        
+
         item = _proxy[module];
 
         if(!item)
