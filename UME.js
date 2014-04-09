@@ -338,7 +338,7 @@
     UME._clearNotes = function(fnStr){
         var self = this;
 
-        fnStr = fnStr.replace(/\/\/.*|\/\*.*\*\//g,'');
+        fnStr = fnStr.replace(/\/\/.*|\/\*.*?\*\//g,'');
 
         return fnStr;
     }
@@ -408,6 +408,10 @@
                 	fn.apply(self);
             })
         }
+
+        self._on(script,"error",function(){
+            throw new Error("loading module error");
+        })
 
         body.appendChild(script);
 
