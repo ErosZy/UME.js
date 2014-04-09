@@ -82,10 +82,12 @@
 
             //否则需要加载这些模块
             for(i = 0; i < len; i++){
-                self._load(modulesInfo[i],function(){
-                    self._emitProxy(modules);
-                    self._emitAll();
-                })
+                (function(module){
+                    self._load(module,function(){
+                        self._emitProxy(module);
+                        self._emitAll();
+                    })
+                }(modulesInfo[i]));
             }
         }
 
@@ -203,16 +205,18 @@
      * @param path
      * @private
      */
-    UME._emitProxy = function(modules){
+    UME._emitProxy = function(module){
         var self = this,item;
+        
+        item = _proxy[module];
 
-        for(var i = 0,len = modules.length; i < len; i++){
-            item = _proxy[modules[i]];
-            for(var j = 0 ,length = item.length; j < length; j++){
-                if(item[j]){
-                    item[j].apply(self);
-                    _proxy[modules[i]][j] = null;
-                }
+        if(!item)
+            return;
+
+        for(var j = 0 ,length = item.length; j < length; j++){
+            if(item[j]){
+                item[j].apply(self);
+                _proxy[module][j] = null;
             }
         }
     }
@@ -410,7 +414,7 @@
         }
 
         self._on(script,"error",function(){
-            throw new Error("loading module error");
+            throw new Error("Fatal：loading module error !");
         })
 
         body.appendChild(script);
