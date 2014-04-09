@@ -286,7 +286,7 @@
     UME._parse = function(fn){
         var self = this,
             fnStr = fn.toString(),
-            reg = /self.use\((["'])(.+?)\1\);?/g,
+            reg = /(?:self|this).use\((["'])(.+?)\1\);?/g,
             requires = [],
             params = [];
 
