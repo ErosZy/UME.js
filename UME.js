@@ -422,26 +422,18 @@
     }
 
     /**
-     * 路径转换
+     * 简单的路径转换方式，貌似IE6不支持，待检测
      * @private
      */
     UME._toPath = function(path) {
+        //简单的路径转换方式，貌似IE6不支持，待检测
         var self = this,
-            location = window.location,
-            protocol = location.protocol,
-            hostname = location.hostname,
-            port = location.port ? ":" + location.port : "",
-            pathname = location.pathname,
-            href = location.href,
-            reg = /^(\/.+\/)/i,
-            url,index;
+            oA = document.createElement("a"),
+            url = '';
 
-        if(reg.test(pathname)){
-            url = protocol + "//" + hostname + port + RegExp["$1"] + path;
-        }else{
-            index = href.lastIndexOf("/");
-            url = href.slice(0,index) + path;
-        }
+        oA.href = path;
+
+        url = oA.href;
 
         return url
     }
