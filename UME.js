@@ -464,7 +464,6 @@
         urlIndex = url.lastIndexOf("/");
 
         if(urlIndex == -1){
-
             if(relateIndex == -1){
                 return url + "/" + relateUrl;
             }else if(relate != "." || relate != ".."){
@@ -472,18 +471,21 @@
             }
 
             return self._covert(url,relateUrl);
-        }
 
-        if(relate == "." || relate == ""){
+        }else if(relate == "." || relate == ""){
             return self._covert(url,relateUrl);
+
         }else if(relate == ".."){
             url = url.slice(0,urlIndex);
             return self._covert(url,relateUrl);
+
         }else if(relateUrl.indexOf("/") != -1){
             url +=  "/" + relate;
             return self._covert(url,relateUrl);
+
         }else{
             return url + "/" + relateUrl;
+
         }
     }
 
