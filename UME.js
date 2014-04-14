@@ -422,20 +422,69 @@
     }
 
     /**
-     * 简单的路径转换方式，貌似IE6不支持，待检测
+     * 路径转换
      * @private
      */
     UME._toPath = function(path) {
-        //简单的路径转换方式，貌似IE6不支持，待检测
         var self = this,
-            oA = document.createElement("a"),
-            url = '';
+            location = window.location,
+            hostname = location.hostname,
+            port = location.port,
+            protocol = location.protocol,
+            pathname = location.pathname,
+            hash = location.hash ? location.hash : '',
+            search = location.search ? location.search : '',
+            url;
 
-        oA.href = path;
+        url = hostname+":"+port + pathname.slice(0,pathname.lastIndexOf("/"));
 
-        url = oA.href;
+        if(/^http/.test(path)){
+            url = path;
+        }else{
+            url = protocol + "//" + self._covert(url,path) + search + hash
+        }
 
-        return url
+        return url;
+    }
+
+    /**
+     * 路径转换helper方法
+     * @param url
+     * @param relateUrl
+     * @returns {*}
+     * @private
+     */
+    UME._covert = function(url,relateUrl){
+        var self = this,
+            relateIndex,urlIndex,relate;
+
+        relateIndex = relateUrl.indexOf("/");
+        relate = relateUrl.slice(0,relateIndex);
+        relateUrl = relateUrl.slice(relateIndex+1);
+        urlIndex = url.lastIndexOf("/");
+
+        if(urlIndex == -1){
+
+            if(relateIndex == -1){
+                return url + "/" + relateUrl;
+            }else if(relate != "." || relate != ".."){
+                url += "/" + relate;
+            }
+
+            return self._covert(url,relateUrl);
+        }
+
+        if(relate == "." || relate == ""){
+            return self._covert(url,relateUrl);
+        }else if(relate == ".."){
+            url = url.slice(0,urlIndex);
+            return self._covert(url,relateUrl);
+        }else if(relateUrl.indexOf("/") != -1){
+            url +=  "/" + relate;
+            return self._covert(url,relateUrl);
+        }else{
+            return url + "/" + relateUrl;
+        }
     }
 
     /**
