@@ -1,7 +1,7 @@
 /**
  * Created by mac on 14-3-15.
  */
-;;;;;;;;;;;;(function(w, u) {
+;(function(w, u) {
     var window = w,
         undefined = u,
         dataMain,
