@@ -1,7 +1,7 @@
 /**
  * Created by mac on 14-3-15.
  */
-;;;;(function(w, u) {
+;(function(w, u) {
     var window = w,
         undefined = u,
         dataMain,
@@ -13,7 +13,7 @@
         _all = [];
 
     /**
-     * ¶¨ÒåÄ£¿é±äÁ¿
+     * å®šä¹‰æ¨¡å—å˜é‡
      */
     UME.define = function() {
         var self = this,
@@ -21,7 +21,7 @@
             count = 0,
             fn,modules,modulesInfo,len,path,i,hasLoadingModules,inlineUseInfo;
 
-        //ËµÃ÷Ã»ÓĞ´«Èërequires²ÎÊı
+        //è¯´æ˜æ²¡æœ‰ä¼ å…¥requireså‚æ•°
         if (argsLen <= 2) {
             modules = [];
             fn = self._is("Function",arguments[1]) ? arguments[1] : function(){};
@@ -37,7 +37,7 @@
             fn = inlineUseInfo.fn;
         }
 
-        //×ª»»Â·¾¶£¬Í³Ò»Îª¾ø¶ÔÂ·¾¶
+        //è½¬æ¢è·¯å¾„ï¼Œç»Ÿä¸€ä¸ºç»å¯¹è·¯å¾„
         path = self._toPath(arguments[0]);
         for(i = 0,len = modules.length; i < len; i++){
             modules[i] = self._toPath(modules[i]);
@@ -45,21 +45,21 @@
             _proxy[modules[i]].push(bind);
         }
 
-        //»ñÈ¡ĞèÒª¼ÓÔØµÄÄ£¿é
+        //è·å–éœ€è¦åŠ è½½çš„æ¨¡å—
         modulesInfo = self._getRequireModulesInfo(modules);
         len = modulesInfo.length;
         for(i = 0; i < len; i ++){
             _loading.push(modulesInfo[i]);
         }
 
-        //ÊÇ·ñÓĞ¼ÓÔØµÄÄ£¿é
+        //æ˜¯å¦æœ‰åŠ è½½çš„æ¨¡å—
         hasLoadingModules = self._hasLoadingModules(modules);
 
         /*
-         * Èç¹ûlenÎª0ÔòËµÃ÷£º
-         * 1.ËùÒÀÀµµÄÄ£¿éÈ«²¿¶¼±£´æÔÚÁËcacheÖĞ
-         * 2.Ã»ÓĞËùÒÀÀµµÄÄ£¿é,Ö»´«ÈëÁËÄ£¿é¶¨Òå
-         * 3.Ä£¿éÕıÔÚ±»¼ÓÔØ
+         * å¦‚æœlenä¸º0åˆ™è¯´æ˜ï¼š
+         * 1.æ‰€ä¾èµ–çš„æ¨¡å—å…¨éƒ¨éƒ½ä¿å­˜åœ¨äº†cacheä¸­
+         * 2.æ²¡æœ‰æ‰€ä¾èµ–çš„æ¨¡å—,åªä¼ å…¥äº†æ¨¡å—å®šä¹‰
+         * 3.æ¨¡å—æ­£åœ¨è¢«åŠ è½½
          */
         if(!len){
 
@@ -71,7 +71,7 @@
             var params = self._getModulesInstance(modules),
                 obj = fn.apply(self,params);
 
-            //½«fn·µ»ØµÄ¶ÔÏó±£´æÔÚ_moduleCachesÖĞ
+            //å°†fnè¿”å›çš„å¯¹è±¡ä¿å­˜åœ¨_moduleCachesä¸­
             _moduleCache[path] = obj;
 
             self._emitAll();
@@ -79,7 +79,7 @@
         }else{
             _all.push(all);
 
-            //·ñÔòĞèÒª¼ÓÔØÕâĞ©Ä£¿é
+            //å¦åˆ™éœ€è¦åŠ è½½è¿™äº›æ¨¡å—
             for(i = 0; i < len; i++){
                 (function(module){
                     self._load(module,function(){
@@ -97,13 +97,13 @@
         function all(){
             var params,obj;
 
-            //±£Ö¤ÒÀÀµÄ£¿éÊÇ¼ÓÔØÍê³ÉµÄ
+            //ä¿è¯ä¾èµ–æ¨¡å—æ˜¯åŠ è½½å®Œæˆçš„
             if(count < len)
                 return false;
 
             params = self._getModulesInstance(modules);
 
-            //±£Ö¤ÒÀÀµÄ£¿éµÄ¡¾ËùÓĞÒÀÀµ¡¿ÒÑÍê³É
+            //ä¿è¯ä¾èµ–æ¨¡å—çš„ã€æ‰€æœ‰ä¾èµ–ã€‘å·²å®Œæˆ
             if(params.length != modules.length)
                 return false;
 
@@ -118,7 +118,7 @@
     }
 
     /**
-     * Íâ²¿µ÷ÓÃÄ£¿é»¯
+     * å¤–éƒ¨è°ƒç”¨æ¨¡å—åŒ–
      * @param path
      */
     UME.use = function(path) {
@@ -133,7 +133,7 @@
     }
 
     /**
-     * »ñÈ¡Ä£¿éĞÅÏ¢£¬°üÀ¨»º´æµÄÄ£¿éºÍĞèÒª¼ÓÔØµÄÄ£¿é
+     * è·å–æ¨¡å—ä¿¡æ¯ï¼ŒåŒ…æ‹¬ç¼“å­˜çš„æ¨¡å—å’Œéœ€è¦åŠ è½½çš„æ¨¡å—
      * @param arr
      * @returns {requires:Array}
      */
@@ -156,7 +156,7 @@
     }
 
     /**
-     * ·µ»ØÄ£¿éµÄÊµÀıÊı×é
+     * è¿”å›æ¨¡å—çš„å®ä¾‹æ•°ç»„
      * @param modules
      * @returns {Array}
      * @private
@@ -174,7 +174,7 @@
     }
 
     /**
-     * Ñ­»·´¥·¢_all¶ÓÁĞ
+     * å¾ªç¯è§¦å‘_allé˜Ÿåˆ—
      * @private
      */
     UME._emitAll = function(){
@@ -190,9 +190,9 @@
         }
 
         /**
-         * Ã»ÓĞÔÚ¼ÓÔØµÄÄ£¿éÁË£¨ÒÀÀµÈ«²¿¼ÓÔØÍê³É£©
-         * µ«ÊÇ_allÀïÃæµÄ»Øµ÷Ã»ÓĞÖ´ĞĞÍê
-         * ÄÇÃ´ĞèÒªÔÙÖ´ĞĞÒ»´ÎÒÔ±£Ö¤_allÊÇ¿ÕÊı×éµÄ
+         * æ²¡æœ‰åœ¨åŠ è½½çš„æ¨¡å—äº†ï¼ˆä¾èµ–å…¨éƒ¨åŠ è½½å®Œæˆï¼‰
+         * ä½†æ˜¯_allé‡Œé¢çš„å›è°ƒæ²¡æœ‰æ‰§è¡Œå®Œ
+         * é‚£ä¹ˆéœ€è¦å†æ‰§è¡Œä¸€æ¬¡ä»¥ä¿è¯_allæ˜¯ç©ºæ•°ç»„çš„
          */
         if(!_loading.length && _all.length){
             self._emitAll();
@@ -200,7 +200,7 @@
     }
 
     /**
-     * ÏàÍ¬µÄÄ£¿éË÷Òı¼ÆÊı¶¼ĞèÒª+1
+     * ç›¸åŒçš„æ¨¡å—ç´¢å¼•è®¡æ•°éƒ½éœ€è¦+1
      * @param path
      * @private
      */
@@ -221,7 +221,7 @@
     }
 
     /**
-     * ÇåÀíproxyÖĞÊôĞÔÖµÎªnullµÄ
+     * æ¸…ç†proxyä¸­å±æ€§å€¼ä¸ºnullçš„
      * @param modules
      * @private
      */
@@ -239,7 +239,7 @@
     }
 
     /**
-     * »ñÈ¡ÕıÔÚ¼ÓÔØµÄloadingÄ£¿éµÄË÷Òı
+     * è·å–æ­£åœ¨åŠ è½½çš„loadingæ¨¡å—çš„ç´¢å¼•
      * @param module
      * @returns {number}
      * @private
@@ -257,7 +257,7 @@
     }
 
     /**
-     * ÊÇ·ñÓĞÕıÔÚ¼ÓÔØµÄÄ£¿é
+     * æ˜¯å¦æœ‰æ­£åœ¨åŠ è½½çš„æ¨¡å—
      * @param modules
      * @returns {boolean}
      */
@@ -277,7 +277,7 @@
     }
 
     /**
-     * ½âÎöÄÚÁªÊ¹ÓÃ self.use(path)
+     * è§£æå†…è”ä½¿ç”¨ self.use(path)
      * @param fn
      * @returns {{requires: Array, fn: Function}}
      * @private
@@ -292,10 +292,10 @@
         if(!reg.test(fnStr))
             return;
 
-        //Çå³ı»»ĞĞ£¬µ¥ĞĞ×¢ÊÍÓëË«ĞĞ×¢ÊÍ
+        //æ¸…é™¤æ¢è¡Œï¼Œå•è¡Œæ³¨é‡Šä¸åŒè¡Œæ³¨é‡Š
         fnStr = self._clearNotes(fnStr);
 
-        //ÕıÔòÆ¥Åä³öÄÚÁªÊ¹ÓÃµÄuseÄ£¿é£¬²¢Ìæ»»ÎªÄ£¿éÃû
+        //æ­£åˆ™åŒ¹é…å‡ºå†…è”ä½¿ç”¨çš„useæ¨¡å—ï¼Œå¹¶æ›¿æ¢ä¸ºæ¨¡å—å
         fnStr = fnStr.replace(/self.use\((["'])(.+?)\1\);?/g,function(){
             var module = arguments[2],
                 begin = module.lastIndexOf("/"),
@@ -312,7 +312,7 @@
 
         });
 
-        //½«Ä£¿é²ÎÊıÌáÈ¡³öÀ´
+        //å°†æ¨¡å—å‚æ•°æå–å‡ºæ¥
         fnStr = fnStr.replace(/function\s*\((.*?)\)/,function(){
             params.unshift(arguments[1]);
             return "function()";
@@ -333,7 +333,7 @@
     }
 
     /**
-     * Çå³ı×¢ÊÍ
+     * æ¸…é™¤æ³¨é‡Š
      * @param fnStr
      * @returns {*}
      * @private
@@ -348,10 +348,10 @@
 
 
     /**
-     * ÊÂ¼ş°ó¶¨º¯Êı
-     * @param ele °ó¶¨¶ÔÏó
-     * @param eventName ÊÂ¼şÃû
-     * @param fn ÊÂ¼şº¯Êı
+     * äº‹ä»¶ç»‘å®šå‡½æ•°
+     * @param ele ç»‘å®šå¯¹è±¡
+     * @param eventName äº‹ä»¶å
+     * @param fn äº‹ä»¶å‡½æ•°
      * @private
      */
     UME._on = function(ele, eventName, fn) {
@@ -373,9 +373,9 @@
     }
 
     /**
-     * ¼ÓÔØscript
-     * @param path ÎÄ¼şÂ·¾¶
-     * @param fn »Øµ÷º¯Êı
+     * åŠ è½½script
+     * @param path æ–‡ä»¶è·¯å¾„
+     * @param fn å›è°ƒå‡½æ•°
      * @private
      */
     UME._load = function(path, fn) {
@@ -413,7 +413,7 @@
         }
 
         self._on(script,"error",function(){
-            throw new Error("Fatal£ºloading module error !");
+            throw new Error("Fatalï¼šloading module error !");
         })
 
         body.appendChild(script);
@@ -421,7 +421,7 @@
     }
 
     /**
-     * Â·¾¶×ª»»
+     * è·¯å¾„è½¬æ¢
      * @private
      */
     UME._toPath = function(path) {
@@ -447,7 +447,7 @@
     }
 
     /**
-     * Â·¾¶×ª»»helper·½·¨
+     * è·¯å¾„è½¬æ¢helperæ–¹æ³•
      * @param url
      * @param relateUrl
      * @returns {*}
@@ -489,9 +489,9 @@
     }
 
     /**
-     * ÅĞ¶ÏÊÇ·ñÊÇÄ³ÖÖÀàĞÍ
-     * @param type ÀàĞÍ£¬ÀıÈç:String
-     * @param param ¶Ô±ÈµÄ²ÎÊı
+     * åˆ¤æ–­æ˜¯å¦æ˜¯æŸç§ç±»å‹
+     * @param type ç±»å‹ï¼Œä¾‹å¦‚:String
+     * @param param å¯¹æ¯”çš„å‚æ•°
      * @returns {boolean}
      * @private
      */
@@ -500,8 +500,8 @@
     }
 
     /**
-     * »ñÈ¡script±êÇ©ÉÏ´øÓĞµÄdata-main²ÎÊı
-     * ½øĞĞ×Ô¶¯¼ÓÔØ
+     * è·å–scriptæ ‡ç­¾ä¸Šå¸¦æœ‰çš„data-mainå‚æ•°
+     * è¿›è¡Œè‡ªåŠ¨åŠ è½½
      */
     dataMain = document.getElementsByTagName("script")[0].getAttribute("data-main");
 
