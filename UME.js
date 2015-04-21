@@ -1,7 +1,8 @@
 /**
  * Created by mac on 14-3-15.
  */
-;(function(w, u) {
+;
+(function (w, u) {
     var window = w,
         undefined = u,
         dataMain,
@@ -15,31 +16,33 @@
     /**
      * 定义模块变量
      */
-    UME.define = function() {
+    UME.define = function () {
         var self = this,
             argsLen = arguments.length,
             count = 0,
-            fn,modules,modulesInfo,len,path,i,hasLoadingModules,inlineUseInfo;
+            fn, modules, modulesInfo, len, path, i, hasLoadingModules, inlineUseInfo;
 
         //说明没有传入requires参数
         if (argsLen <= 2) {
             modules = [];
-            fn = self._is("Function",arguments[1]) ? arguments[1] : function(){};
+            fn = self._is("Function", arguments[1]) ? arguments[1] : function () {
+            };
         } else {
-            modules = self._is("Array",arguments[1]) ? arguments[1] : [];
-            fn = self._is("Function",arguments[2]) ? arguments[2] : function(){};
+            modules = self._is("Array", arguments[1]) ? arguments[1] : [];
+            fn = self._is("Function", arguments[2]) ? arguments[2] : function () {
+            };
         }
 
         inlineUseInfo = self._parse(fn);
 
-        if(inlineUseInfo){
-            modules = modules.concat.apply(modules,inlineUseInfo.requires);
+        if (inlineUseInfo) {
+            modules = modules.concat.apply(modules, inlineUseInfo.requires);
             fn = inlineUseInfo.fn;
         }
 
         //转换路径，统一为绝对路径
         path = self._toPath(arguments[0]);
-        for(i = 0,len = modules.length; i < len; i++){
+        for (i = 0, len = modules.length; i < len; i++) {
             modules[i] = self._toPath(modules[i]);
             _proxy[modules[i]] = _proxy[modules[i]] ? _proxy[modules[i]] : [];
             _proxy[modules[i]].push(bind);
@@ -48,7 +51,7 @@
         //获取需要加载的模块
         modulesInfo = self._getRequireModulesInfo(modules);
         len = modulesInfo.length;
-        for(i = 0; i < len; i ++){
+        for (i = 0; i < len; i++) {
             _loading.push(modulesInfo[i]);
         }
 
@@ -61,28 +64,28 @@
          * 2.没有所依赖的模块,只传入了模块定义
          * 3.模块正在被加载
          */
-        if(!len){
+        if (!len) {
 
-            if(hasLoadingModules){
+            if (hasLoadingModules) {
                 _all.push(all);
                 return;
             }
 
             var params = self._getModulesInstance(modules),
-                obj = fn.apply(self,params);
+                obj = fn.apply(self, params);
 
             //将fn返回的对象保存在_moduleCaches中
             _moduleCache[path] = obj;
 
             self._emitAll();
 
-        }else{
+        } else {
             _all.push(all);
 
             //否则需要加载这些模块
-            for(i = 0; i < len; i++){
-                (function(module){
-                    self._load(module,function(){
+            for (i = 0; i < len; i++) {
+                (function (module) {
+                    self._load(module, function () {
                         self._emitProxy(module);
                         self._emitAll();
                     })
@@ -94,22 +97,22 @@
             count++;
         }
 
-        function all(){
-            var params,obj;
+        function all() {
+            var params, obj;
 
             //保证依赖模块是加载完成的
-            if(count < len)
+            if (count < len)
                 return false;
 
             params = self._getModulesInstance(modules);
 
             //保证依赖模块的【所有依赖】已完成
-            if(params.length != modules.length)
+            if (params.length != modules.length)
                 return false;
 
             self._clearProxy(modules);
 
-            obj = fn.apply(self,params);
+            obj = fn.apply(self, params);
 
             _moduleCache[path] = obj;
 
@@ -121,13 +124,13 @@
      * 外部调用模块化
      * @param path
      */
-    UME.use = function(path) {
+    UME.use = function (path) {
         var self = this;
 
-        if(self._is("String",path)){
+        if (self._is("String", path)) {
             path = self._toPath(path);
-	        self._load(path);
-        }else{
+            self._load(path);
+        } else {
             throw new Error("the param path is needed,please check your function caller param!");
         }
     }
@@ -137,16 +140,16 @@
      * @param arr
      * @returns {requires:Array}
      */
-    UME._getRequireModulesInfo = function(arr){
+    UME._getRequireModulesInfo = function (arr) {
         var self = this,
             requires = [],
-            i,len;
+            i, len;
 
-        for(i = 0, len = arr.length; i < len; i++){
+        for (i = 0, len = arr.length; i < len; i++) {
             var module = arr[i],
-                isCached = module in _moduleCache  || self._getLoadingIndex(module) != -1;
+                isCached = module in _moduleCache || self._getLoadingIndex(module) != -1;
 
-            if(!isCached){
+            if (!isCached) {
                 requires.push(module);
             }
         }
@@ -161,12 +164,12 @@
      * @returns {Array}
      * @private
      */
-    UME._getModulesInstance = function(modules){
+    UME._getModulesInstance = function (modules) {
         var self = this,
             instances = [];
 
-        for(var i = 0,len = modules.length; i < len; i++){
-            if(modules[i] in _moduleCache)
+        for (var i = 0, len = modules.length; i < len; i++) {
+            if (modules[i] in _moduleCache)
                 instances.push(_moduleCache[modules[i]]);
         }
 
@@ -177,15 +180,15 @@
      * 循环触发_all队列
      * @private
      */
-    UME._emitAll = function(){
+    UME._emitAll = function () {
         var self = this,
             flag = false;
 
-        for(var i = _all.length - 1; i >= 0; i--){
+        for (var i = _all.length - 1; i >= 0; i--) {
             flag = _all[i] && _all[i].apply(self);
 
-            if(flag){
-                _all.splice(i,1);
+            if (flag) {
+                _all.splice(i, 1);
             }
         }
 
@@ -194,7 +197,7 @@
          * 但是_all里面的回调没有执行完
          * 那么需要再执行一次以保证_all是空数组的
          */
-        if(!_loading.length && _all.length){
+        if (!_loading.length && _all.length) {
             self._emitAll();
         }
     }
@@ -204,16 +207,16 @@
      * @param path
      * @private
      */
-    UME._emitProxy = function(module){
-        var self = this,item;
+    UME._emitProxy = function (module) {
+        var self = this, item;
 
         item = _proxy[module];
 
-        if(!item)
+        if (!item)
             return;
 
-        for(var j = 0 ,length = item.length; j < length; j++){
-            if(item[j]){
+        for (var j = 0 , length = item.length; j < length; j++) {
+            if (item[j]) {
                 item[j].apply(self);
                 _proxy[module][j] = null;
             }
@@ -225,14 +228,14 @@
      * @param modules
      * @private
      */
-    UME._clearProxy = function(modules){
-        var self = this,item;
+    UME._clearProxy = function (modules) {
+        var self = this, item;
 
-        for(var i = 0,len = modules.length; i < len; i++){
+        for (var i = 0, len = modules.length; i < len; i++) {
             item = _proxy[modules[i]];
-            for(var j = item.length - 1; j >= 0 ; j--){
-                if(!item[j]){
-                    item.splice(j,1);
+            for (var j = item.length - 1; j >= 0; j--) {
+                if (!item[j]) {
+                    item.splice(j, 1);
                 }
             }
         }
@@ -244,12 +247,12 @@
      * @returns {number}
      * @private
      */
-    UME._getLoadingIndex = function(module){
+    UME._getLoadingIndex = function (module) {
         var self = this,
             index = -1;
 
-        for(var i = 0, len = _loading.length; i < len; i++){
-            if(_loading[i] == module)
+        for (var i = 0, len = _loading.length; i < len; i++) {
+            if (_loading[i] == module)
                 index = i
         }
 
@@ -261,13 +264,13 @@
      * @param modules
      * @returns {boolean}
      */
-    UME._hasLoadingModules = function(modules){
-        var self = this,item;
+    UME._hasLoadingModules = function (modules) {
+        var self = this, item;
 
-        for(var i = 0,len = modules.length; i < len; i++){
+        for (var i = 0, len = modules.length; i < len; i++) {
             item = modules[i];
-            for(var j = 0,length = _loading.length; j < length; j++){
-                if(item == _loading[j]){
+            for (var j = 0, length = _loading.length; j < length; j++) {
+                if (item == _loading[j]) {
                     return true;
                 }
             }
@@ -282,25 +285,25 @@
      * @returns {{requires: Array, fn: Function}}
      * @private
      */
-    UME._parse = function(fn){
+    UME._parse = function (fn) {
         var self = this,
             fnStr = fn.toString(),
             reg = /(?:self|this).use\((["'])(.+?)\1\);?/g,
             requires = [],
             params = [];
 
-        if(!reg.test(fnStr))
+        if (!reg.test(fnStr))
             return;
 
         //清除换行，单行注释与双行注释
         fnStr = self._clearNotes(fnStr);
 
         //正则匹配出内联使用的use模块，并替换为模块名
-        fnStr = fnStr.replace(/self.use\((["'])(.+?)\1\);?/g,function(){
+        fnStr = fnStr.replace(/self.use\((["'])(.+?)\1\);?/g, function () {
             var module = arguments[2],
                 begin = module.lastIndexOf("/"),
                 last = module.lastIndexOf("."),
-                moduleName = module.slice(begin+1).slice(0,last-2);
+                moduleName = module.slice(begin + 1).slice(0, last - 2);
 
             moduleName += +new Date();
 
@@ -313,18 +316,18 @@
         });
 
         //将模块参数提取出来
-        fnStr = fnStr.replace(/function\s*\((.*?)\)/,function(){
+        fnStr = fnStr.replace(/function\s*\((.*?)\)/, function () {
             params.unshift(arguments[1]);
             return "function()";
         });
 
-        for(var i = 0,len = params.length; i < len; i++){
-            if(!params[i])
-                params.splice(i,1);
+        for (var i = 0, len = params.length; i < len; i++) {
+            if (!params[i])
+                params.splice(i, 1);
         }
         params = params.join(",");
 
-        fn = new Function(params,"return ("+fnStr+"());");
+        fn = new Function(params, "return (" + fnStr + "());");
 
         return {
             requires: requires,
@@ -338,10 +341,10 @@
      * @returns {*}
      * @private
      */
-    UME._clearNotes = function(fnStr){
+    UME._clearNotes = function (fnStr) {
         var self = this;
 
-        fnStr = fnStr.replace(/\/\/.*|\/\*.*?\*\//g,'');
+        fnStr = fnStr.replace(/\/\/.*|\/\*.*?\*\//g, '');
 
         return fnStr;
     }
@@ -354,15 +357,15 @@
      * @param fn 事件函数
      * @private
      */
-    UME._on = function(ele, eventName, fn) {
+    UME._on = function (ele, eventName, fn) {
         var self = this,
             event = eventName + fn.toString().replace(/\s+/g, '');
 
-        ele[eventName+"event"] = ele[eventName] ? ele[eventName] : {};
-        ele[eventName+"event"][event] = fn;
+        ele[eventName + "event"] = ele[eventName] ? ele[eventName] : {};
+        ele[eventName + "event"][event] = fn;
 
         if (document.attachEvent) {
-            ele.attachEvent("on" + eventName, function(ev) {
+            ele.attachEvent("on" + eventName, function (ev) {
                 fn.call(ele, ev);
             });
         } else if (document.addEventListener) {
@@ -378,41 +381,41 @@
      * @param fn 回调函数
      * @private
      */
-    UME._load = function(path, fn) {
+    UME._load = function (path, fn) {
         var self = this,
             isIE = document.attachEvent ? true : false,
             body = document.getElementsByTagName("body")[0],
-            script,index;
+            script, index;
 
         script = document.createElement("script");
         script.src = path;
 
         if (isIE) {
-            self._on(script, "readystatechange", function() {
-                if (script.readyState == "complete"){
+            self._on(script, "readystatechange", function () {
+                if (script.readyState == "complete") {
                     index = self._getLoadingIndex(path);
 
-                    if(index != -1)
-                        _loading.splice(index,1);
-					
-					if(self._is("Function",fn))
-                    	fn.apply(self)
+                    if (index != -1)
+                        _loading.splice(index, 1);
+
+                    if (self._is("Function", fn))
+                        fn.apply(self)
                 }
             })
         } else {
 
-            self._on(script, "load", function() {
+            self._on(script, "load", function () {
                 index = self._getLoadingIndex(path);
 
-                if(index != -1)
-                    _loading.splice(index,1);
-				
-				if(self._is("Function",fn))
-                	fn.apply(self);
+                if (index != -1)
+                    _loading.splice(index, 1);
+
+                if (self._is("Function", fn))
+                    fn.apply(self);
             })
         }
 
-        self._on(script,"error",function(){
+        self._on(script, "error", function () {
             throw new Error("Fatal：loading module error !");
         })
 
@@ -424,7 +427,7 @@
      * 路径转换
      * @private
      */
-    UME._toPath = function(path) {
+    UME._toPath = function (path) {
         var self = this,
             location = window.location,
             hostname = location.hostname,
@@ -435,12 +438,12 @@
             search = location.search ? location.search : '',
             url;
 
-        url = hostname+":"+port + pathname.slice(0,pathname.lastIndexOf("/"));
+        url = hostname + ":" + port + pathname.slice(0, pathname.lastIndexOf("/"));
 
-        if(/^http/.test(path)){
+        if (/^http/.test(path)) {
             url = path;
-        }else{
-            url = protocol + "//" + self._covert(url,path) + search + hash
+        } else {
+            url = protocol + "//" + self._covert(url, path) + search + hash
         }
 
         return url;
@@ -453,36 +456,36 @@
      * @returns {*}
      * @private
      */
-    UME._covert = function(url,relateUrl){
+    UME._covert = function (url, relateUrl) {
         var self = this,
-            relateIndex,urlIndex,relate;
+            relateIndex, urlIndex, relate;
 
         relateIndex = relateUrl.indexOf("/");
-        relate = relateUrl.slice(0,relateIndex);
-        relateUrl = relateUrl.slice(relateIndex+1);
+        relate = relateUrl.slice(0, relateIndex);
+        relateUrl = relateUrl.slice(relateIndex + 1);
         urlIndex = url.lastIndexOf("/");
 
-        if(urlIndex == -1){
-            if(relateIndex == -1){
+        if (urlIndex == -1) {
+            if (relateIndex == -1) {
                 return url + "/" + relateUrl;
-            }else if(relate != "." || relate != ".."){
+            } else if (relate != "." || relate != "..") {
                 url += "/" + relate;
             }
 
-            return self._covert(url,relateUrl);
+            return self._covert(url, relateUrl);
 
-        }else if(relate == "." || relate == ""){
-            return self._covert(url,relateUrl);
+        } else if (relate == "." || relate == "") {
+            return self._covert(url, relateUrl);
 
-        }else if(relate == ".."){
-            url = url.slice(0,urlIndex);
-            return self._covert(url,relateUrl);
+        } else if (relate == "..") {
+            url = url.slice(0, urlIndex);
+            return self._covert(url, relateUrl);
 
-        }else if(relateUrl.indexOf("/") != -1){
-            url +=  "/" + relate;
-            return self._covert(url,relateUrl);
+        } else if (relateUrl.indexOf("/") != -1) {
+            url += "/" + relate;
+            return self._covert(url, relateUrl);
 
-        }else{
+        } else {
             return url + "/" + relateUrl;
 
         }
@@ -495,7 +498,7 @@
      * @returns {boolean}
      * @private
      */
-    UME._is = function(type,param){
+    UME._is = function (type, param) {
         return Object.prototype.toString.call(param) == "[object " + type + "]";
     }
 
@@ -505,7 +508,7 @@
      */
     dataMain = document.getElementsByTagName("script")[0].getAttribute("data-main");
 
-    if(dataMain){
+    if (dataMain) {
         UME.use("./" + dataMain);
     }
 
